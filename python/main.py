@@ -30,6 +30,13 @@ def disconnected(client):
     sys.exit(1)
 
 
+temp = ''
+update_fan = True
+fan_id = ''
+id_rec = ''
+level = ''
+
+
 def message(client, feed_id, payload):
     if isMicrobitConnected:
         global temp1_button, light1_button
@@ -57,8 +64,9 @@ def message(client, feed_id, payload):
                 ser.write(("4#").encode())
             elif payload == "3":
                 ser.write(("5#").encode())
-        global temp, bright, update_fan, update_light, fan_id, id_rec, level, bright
 
+        # Add record to database
+        global temp, update_fan, fan_id, id_rec, level
         id_room = 1
         today = date.today().strftime("%d/%m/%Y") + " " + \
             datetime.now().strftime("%H:%M:%S")
@@ -71,10 +79,13 @@ def message(client, feed_id, payload):
                 'id_location').equal_to(id_room).get()
             for fan in fan_query.each():
                 update_fan = True
+                if temp1_button == 0:
+                    update_fan = False
                 level = fan.val()['level']
                 fan_id = fan.val()['id']
                 temp = int(payload)
-                # If temp excess threshhold, update status and add rec if necessary
+
+                # If temp excess threshhold, update fan if necessary
                 if temp <= 32 and level != 0:
                     level = 0
                 elif temp > 32 and temp <= 35 and level != 1:
@@ -86,24 +97,27 @@ def message(client, feed_id, payload):
                 else:
                     update_fan = False
                 if update_fan:
+                    client.publish("dadn.fan1", level)
                     db_fan().child(fan.key()).update({'level': level})
         if feed_id == "dadn.light1":
             light_query = db_light().order_by_child(
                 'id_location').equal_to(id_room).get()
             for light in light_query.each():
                 update_light = True
+                if light1_button == 0:
+                    update_light = False
                 status = light.val()['status']
-                # If light excess threshhold
                 bright = int(payload)
-                # Update status and add rec if necessary
+                # If light excess threshhold, update light if necessary
                 if bright <= 200 and status != 'on':
                     status = 'on'
                 elif bright > 200 and status != 'off':
                     status = 'off'
                 else:
                     update_light = False
+
+                # If update fan, add record for fan
                 if update_fan:
-                    print('lol')
                     data_rec = {
                         'id': id_rec,
                         'id_sensor': id_room,
@@ -118,7 +132,10 @@ def message(client, feed_id, payload):
                         'level': level}
                     id_rec += 1
                     db.child("Record").push(data_rec)
+
+                # If update light, add record for light
                 if update_light:
+                    client.publish("dadn.led1", 0 if status == 'off' else 1)
                     db_light().child(light.key()).update({'status': status})
                     data_rec = {
                         'id': id_rec,
@@ -133,6 +150,8 @@ def message(client, feed_id, payload):
                         'status': status,
                         'level': ''}
                     db.child("Record").push(data_rec)
+
+                # If neither fan nor light update, add default record
                 if not update_fan and not update_light:
                     data_rec = {
                         'id': id_rec,
@@ -147,6 +166,8 @@ def message(client, feed_id, payload):
                         'status': '',
                         'level': ''}
                     db.child("Record").push(data_rec)
+
+                # Update room information
                 location_query = db_location().order_by_child(
                     'id').equal_to(id_room).get()
                 for location in location_query.each():
@@ -188,8 +209,6 @@ if getPort() != "None":
 
 client.publish("dadn.light1-button", 0)
 client.publish("dadn.temp1-button", 0)
-temp1 = 0
-light1 = 0
 temp1_button = 0
 light1_button = 0
 
@@ -199,29 +218,29 @@ def processData(data):
     data = data.replace("#", "")
     splitData = data.split(":")
     print(splitData)
-    global temp1, light1, temp1_button, light1_button
+    global temp1_button, light1_button
 
     if splitData[1] == "LIGHT" and splitData[0] == "1":
         client.publish("dadn.light1", splitData[2])
-        if light1_button == 1:
-            light1 = int(splitData[2])
-            if light1 <= 200:
-                ser.write(("1#").encode())
-            elif light1 > 200:
-                ser.write(("0#").encode())
+        # if light1_button == 1:
+        #     light1 = int(splitData[2])
+        #     if light1 <= 200:
+        #         ser.write(("1#").encode())
+        #     elif light1 > 200:
+        #         ser.write(("0#").encode())
 
     if splitData[1] == "TEMP" and splitData[0] == "1":
         client.publish("dadn.temp1", splitData[2])
-        if temp1_button == 1:
-            temp1 = int(splitData[2])
-            if temp1 <= 32:
-                ser.write(("2#").encode())
-            elif temp1 > 32 and temp1 <= 35:
-                ser.write(("3#").encode())
-            elif temp1 > 35 and temp1 <= 37:
-                ser.write(("4#").encode())
-            elif temp1 > 37:
-                ser.write(("5#").encode())
+        # if temp1_button == 1:
+        #     temp1 = int(splitData[2])
+        #     if temp1 <= 32:
+        #         ser.write(("2#").encode())
+        #     elif temp1 > 32 and temp1 <= 35:
+        #         ser.write(("3#").encode())
+        #     elif temp1 > 35 and temp1 <= 37:
+        #         ser.write(("4#").encode())
+        #     elif temp1 > 37:
+        #         ser.write(("5#").encode())
 
 
 mess = ""
