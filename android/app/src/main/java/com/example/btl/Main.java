@@ -2,8 +2,10 @@ package com.example.btl;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -13,7 +15,12 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class Main extends AppCompatActivity {
     public static BottomNavigationView bottom_nav;
-
+    FragmentManager fragmentManager=getFragmentManager();
+    private HomeFragment homeFragment;
+    private ControlFragment controlFragment;
+    private NotifiFragment notifyFragment;
+    private StaticFragment staticFragment;
+    private AccountFragment accountFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,10 +28,15 @@ public class Main extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        homeFragment=new HomeFragment();
+
+        notifyFragment=new NotifiFragment();
+        staticFragment=new StaticFragment();
+        accountFragment=new AccountFragment();
+
         bottom_nav = findViewById(R.id.bot_nav);
-        System.out.println(bottom_nav);
         bottom_nav.setOnItemSelectedListener(navListen);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
     }
 
     private NavigationBarView.OnItemSelectedListener navListen=new NavigationBarView.OnItemSelectedListener() {
@@ -33,22 +45,31 @@ public class Main extends AppCompatActivity {
             Fragment sel=null;
             switch (item.getItemId()) {
                 case R.id.homeFragment:
-                    sel = new HomeFragment();
+                    sel = homeFragment;
                     break;
                 case R.id.controlFragment:
-                    sel = new ControlFragment();
-                    break;
-                case R.id.staticFragment:
-                    sel = new StaticFragment();
+                    if(controlFragment!=null) {
+                        ControlFragment.switch_light.setOnCheckedChangeListener(null);
+                        ControlFragment.switch_fan.setOnCheckedChangeListener(null);
+                        ControlFragment.switch_auto.setOnCheckedChangeListener(null);
+                        ControlFragment.fan.setOnCheckedChangeListener(null);
+                    }
+                    controlFragment=new ControlFragment();
+                    sel=controlFragment;
                     break;
                 case R.id.notifiFragment:
-                    sel = new NotifiFragment();
+                    sel = notifyFragment;
+                    break;
+                case R.id.staticFragment:
+                    sel = staticFragment;
                     break;
                 case R.id.accountFragment:
-                    sel = new AccountFragment();
+                    sel=accountFragment;
+                    break;
+                default:
                     break;
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,sel).commit();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container,sel).commit();
             return true;
         }
     };

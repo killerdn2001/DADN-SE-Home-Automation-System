@@ -1,7 +1,7 @@
 package com.example.btl;
 
 public class User {
-    private String name,email,phone,password,last_login,time_create;
+    private String name,email,phone,password,last_login,time_create,auto;
 
     public String getName() {
         return name;
@@ -51,13 +51,22 @@ public class User {
         this.time_create = time_create;
     }
 
-    public User(String name, String email, String phone, String password, String last_login, String time_create) {
+    public String getAuto() {
+        return auto;
+    }
+
+    public void setAuto(String auto) {
+        this.auto = auto;
+    }
+
+    public User(String name, String email, String phone, String password, String last_login, String time_create, String auto) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.last_login = last_login;
         this.time_create = time_create;
+        this.auto = auto;
     }
 
     public User() {

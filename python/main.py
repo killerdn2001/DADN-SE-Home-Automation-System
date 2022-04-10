@@ -39,17 +39,6 @@ level = ''
 
 def message(client, feed_id, payload):
     if isMicrobitConnected:
-        global temp1_button, light1_button
-        if feed_id == "dadn.light1-button":
-            if payload == "0":
-                light1_button = 0  # thu cong
-            elif payload == "1":
-                light1_button = 1  # tu dong
-        if feed_id == "dadn.temp1-button":
-            if payload == "0":
-                temp1_button = 0  # thu cong
-            elif payload == "1":
-                temp1_button = 1  # tu dong
         if feed_id == "dadn.led1":
             if payload == "0":
                 ser.write(("0#").encode())
@@ -64,22 +53,12 @@ def message(client, feed_id, payload):
                 ser.write(("4#").encode())
             elif payload == "3":
                 ser.write(("5#").encode())
-
-        # Add record to database
-        global temp, update_fan, fan_id, id_rec, level
-        id_room = 1
-        today = date.today().strftime("%d/%m/%Y") + " " + \
-            datetime.now().strftime("%H:%M:%S")
-        try:
-            id_rec = len(db_rec().get().val())+1
-        except:
-            id_rec = 1
         if feed_id == "dadn.temp1":
             fan_query = db_fan().order_by_child(
                 'id_location').equal_to(id_room).get()
             for fan in fan_query.each():
                 update_fan = True
-                if temp1_button == 0:
+                if not auto or auto == 'false':
                     update_fan = False
                 level = fan.val()['level']
                 fan_id = fan.val()['id']
@@ -100,14 +79,25 @@ def message(client, feed_id, payload):
                     client.publish("dadn.fan1", level)
                     db_fan().child(fan.key()).update({'level': level})
         if feed_id == "dadn.light1":
+
+            # Add record to database
+            global temp, update_fan, fan_id, id_rec, level, auto
+            id_room = 1
+            today = date.today().strftime("%d/%m/%Y") + " " + \
+                datetime.now().strftime("%H:%M:%S")
+            try:
+                id_rec = len(db_rec().get().val())+1
+            except:
+                id_rec = 1
             light_query = db_light().order_by_child(
                 'id_location').equal_to(id_room).get()
             for light in light_query.each():
                 update_light = True
-                if light1_button == 0:
+                if not auto or auto == 'false':
                     update_light = False
                 status = light.val()['status']
                 bright = int(payload)
+
                 # If light excess threshhold, update light if necessary
                 if bright <= 200 and status != 'on':
                     status = 'on'
@@ -207,11 +197,6 @@ if getPort() != "None":
     ser = serial.Serial(port=getPort(), baudrate=115200)
     isMicrobitConnected = True
 
-client.publish("dadn.light1-button", 0)
-client.publish("dadn.temp1-button", 0)
-temp1_button = 0
-light1_button = 0
-
 
 def processData(data):
     data = data.replace("!", "")
@@ -222,25 +207,9 @@ def processData(data):
 
     if splitData[1] == "LIGHT" and splitData[0] == "1":
         client.publish("dadn.light1", splitData[2])
-        # if light1_button == 1:
-        #     light1 = int(splitData[2])
-        #     if light1 <= 200:
-        #         ser.write(("1#").encode())
-        #     elif light1 > 200:
-        #         ser.write(("0#").encode())
 
     if splitData[1] == "TEMP" and splitData[0] == "1":
         client.publish("dadn.temp1", splitData[2])
-        # if temp1_button == 1:
-        #     temp1 = int(splitData[2])
-        #     if temp1 <= 32:
-        #         ser.write(("2#").encode())
-        #     elif temp1 > 32 and temp1 <= 35:
-        #         ser.write(("3#").encode())
-        #     elif temp1 > 35 and temp1 <= 37:
-        #         ser.write(("4#").encode())
-        #     elif temp1 > 37:
-        #         ser.write(("5#").encode())
 
 
 mess = ""
@@ -260,24 +229,45 @@ def readSerial():
             else:
                 mess = mess[end+1:]
 
+# Listen to record database for getting the recent record then change device state accordingly
 
-def stream_handler(message):
+
+def record_stream_handler(message):
     try:
         id_rec = db.child("Record").child(message["path"].split("/")[1]).get()
-        auto = " automatically" if id_rec.val()['auto'] else " manually"
+        auto_rec = " automatically" if id_rec.val()['auto'] else " manually"
         if id_rec.val()['type'] == "Fan":
-            print("Fan set to "+str(id_rec.val()['level'])+auto)
+            print("Fan set to "+str(id_rec.val()['level'])+auto_rec)
             client.publish("dadn.fan1", id_rec.val()['level'])
-        else:
-            print("Light set to "+str(id_rec.val()['status'])+auto)
+        elif id_rec.val()['type'] == "Light":
+            print("Light set to "+str(id_rec.val()['status'])+auto_rec)
             client.publish("dadn.led1", 1 if id_rec.val()
                            ['status'] == "on" else 0)
     except:
         pass
 
 
+auto = ''
+
+# Listen to user database for getting auto mode information
+
+
+def user_stream_handler(message):
+    global auto
+    mess_split = message["path"].split("/")
+    if len(mess_split) == 3:
+        update_attribute = mess_split[2]
+        id_user = mess_split[1]
+        if update_attribute == 'last_login':
+            auto = db.child("User").child(id_user).get().val()['auto']
+        elif update_attribute == 'auto':
+            auto = message["data"]
+        print("Auto mode on" if auto == "true" else "Auto mode off")
+
+
 def listen():
-    my_stream = db.child("Record").stream(stream_handler)
+    rec_stream = db.child("Record").stream(record_stream_handler)
+    auto_stream = db.child("User").stream(user_stream_handler)
 
 
 listen()

@@ -1,43 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_main">
-            <ImageView
-                android:id="@+id/img_bg"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:layout_marginTop="-15dp"
-                android:src="@drawable/bg_home1" />
+        android:background="@drawable/bg_main"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="0dp">
 
-            <TextView
-                android:id="@+id/welcome"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text=" Control"
-                android:textColor="@color/white"
-                android:textSize="40dp"
-                android:textStyle="bold|italic" />
+        <ImageView
+            android:id="@+id/img_bg"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_marginTop="-15dp"
+            android:src="@drawable/bg_home1" />
+
+        <TextView
+            android:id="@+id/welcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text=" Control"
+            android:textColor="@color/white"
+            android:textSize="40dp"
+            android:textStyle="bold|italic" />
+
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_marginTop="120dp"
             android:layout_centerHorizontal="true"
-            />
+            android:layout_marginTop="120dp" />
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spinner"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/auto_zone">
+            <TextView
+                android:id="@+id/auto_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold|italic"
+                android:text="Auto mode"
+                android:textSize="19dp"
+                android:layout_marginTop="5dp"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/img_auto"
+                android:src="@drawable/auto"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/auto_text"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/auto_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_alignTop="@+id/auto_text"
+
+                android:layout_alignBottom="@+id/auto_text"
+
+                android:layout_toRightOf="@+id/img_auto" />
+        </RelativeLayout>
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView"
             android:layout_width="340dp"
-            android:layout_centerHorizontal="true"
             android:layout_height="240dp"
-            android:layout_below="@+id/spinner"
+            android:layout_below="@+id/auto_zone"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/main2"
             app:cardCornerRadius="20dp"
@@ -58,7 +98,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="35dp"
+                    android:layout_marginTop="15dp"
                     android:text="Temperature"
                     android:textColor="@color/black"
                     android:textSize="25dp"
@@ -133,14 +173,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/fan"
-                    android:layout_marginTop="5dp"
+
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/low"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="60dp"
+                        android:layout_marginLeft="40dp"
                         android:text="Low" />
 
                     <RadioButton
@@ -166,9 +206,9 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView2"
             android:layout_width="340dp"
-            android:layout_centerHorizontal="true"
-            android:layout_height="240dp"
+            android:layout_height="220dp"
             android:layout_below="@+id/cardView"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/main2"
             app:cardCornerRadius="20dp"
@@ -188,8 +228,8 @@
                     android:id="@+id/sun_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="35dp"
+                    android:layout_marginLeft="100dp"
+                    android:layout_marginTop="15dp"
                     android:text="Light Intensity"
                     android:textColor="@color/black"
                     android:textSize="25dp"

@@ -64,6 +64,7 @@
 //}
 package com.example.btl;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -74,7 +75,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -120,9 +120,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             default:
                 break;
         }
-        System.out.println(ControlFragment.id_room);
         Main.bottom_nav.setSelectedItemId(R.id.controlFragment);
-        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container,new ControlFragment()).commit();
+//        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container,new ControlFragment()).commit();
     }
 
 

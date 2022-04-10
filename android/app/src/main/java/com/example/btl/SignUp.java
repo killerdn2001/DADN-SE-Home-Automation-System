@@ -8,6 +8,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -25,11 +30,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 public class SignUp extends AppCompatActivity {
     public static String name="LOL";
     private long id_user;
-
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +43,8 @@ public class SignUp extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+
+        mAuth=FirebaseAuth.getInstance();
         EditText name_edit=findViewById(R.id.signup_name);
         EditText email_edit=findViewById(R.id.signup_email);
         EditText phone_edit=findViewById(R.id.signup_phone);
@@ -76,35 +84,66 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(SignUp.this,"All field is required",Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                    email_edit.setError("Please provide valid email!");
+                    return;
+                }
                 if (!pass1.equals(pass2)){
                     Toast.makeText(SignUp.this,"The confirm password doesn't match",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                FirebaseDatabase.getInstance().getReference("User").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+//                FirebaseDatabase.getInstance().getReference("User").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                        if (snapshot.getChildrenCount()!=0){
+//                            Toast.makeText(SignUp.this,"Account existed. Try another email",Toast.LENGTH_SHORT).show();
+//                        }
+//                        else {
+//                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
+//                            format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
+//                            Login.time_log=format.format(Calendar.getInstance().getTime());
+//                            Login.time_create=Login.time_log;
+//                            Login.email=email;
+//                            Login.name=name;
+//                            Login.phone=phone;
+//                            FirebaseDatabase.getInstance().getReference("User").push().setValue(new User(name,email,phone,pass1,Login.time_log,Login.time_create,"false"));
+//                            Toast.makeText(SignUp.this,"Account created successfully",Toast.LENGTH_SHORT).show();
+//                            startActivity(new Intent(SignUp.this, Main.class));
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
+                System.out.println(email+pass1);
+                mAuth.createUserWithEmailAndPassword(email,pass1).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                        if (snapshot.getChildrenCount()!=0){
-                            Toast.makeText(SignUp.this,"Account existed. Try another email",Toast.LENGTH_SHORT).show();
-                        }
-                        else {
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()) {
+                            System.out.println(5);
                             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
-                            format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
+//                            format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
                             Login.time_log=format.format(Calendar.getInstance().getTime());
                             Login.time_create=Login.time_log;
-                            Login.email=email;
-                            Login.name=name;
-                            Login.phone=phone;
-                            FirebaseDatabase.getInstance().getReference("User").push().setValue(new User(name,email,phone,pass1,Login.time_log,Login.time_create));
-                            Toast.makeText(SignUp.this,"Account created successfully",Toast.LENGTH_SHORT).show();
-                            Intent intent=new Intent(SignUp.this, Main.class);
-                            startActivity(intent);
+                            User user = new User(name, email, phone, pass1, Login.time_log, Login.time_create, "false");
+                            FirebaseDatabase.getInstance().getReference("User").child(mAuth.getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(SignUp.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(SignUp.this, Main.class));
+                                    } else {
+                                        Toast.makeText(SignUp.this, "Account created fail! Try again!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }else{
+                            Toast.makeText(SignUp.this,"Account created failed! Try again!",Toast.LENGTH_SHORT).show();
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
                     }
                 });
 

@@ -1,17 +1,19 @@
 package com.example.btl;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountFragment extends Fragment {
 
@@ -38,8 +40,7 @@ public class AccountFragment extends Fragment {
         sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent login=new Intent(getContext(), Login.class);
-                startActivity(login);
+                startActivity(new Intent(getContext(), Login.class));
             }
         });
     }

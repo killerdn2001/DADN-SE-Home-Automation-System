@@ -17,6 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,8 +31,8 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class Login extends AppCompatActivity {
-    public static String email="",name="",phone="",time_log="",time_create="";
-
+    public static String email="",name="",phone="",time_log="",time_create="",auto="";
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +43,7 @@ public class Login extends AppCompatActivity {
         EditText email_input=findViewById(R.id.editTextTextEmailAddress);
         EditText pass_input=findViewById(R.id.editTextNumberPassword);
         TextView sign_up=findViewById(R.id.textView2);
+        mAuth=FirebaseAuth.getInstance();
         String text="Sign Up";
         SpannableString ss=new SpannableString(text);
         ClickableSpan clickableSpan=new ClickableSpan() {
@@ -83,6 +88,7 @@ public class Login extends AppCompatActivity {
                                     name=(String)snap.child("name").getValue();
                                     phone=(String)snap.child("phone").getValue();
                                     time_create=(String)snap.child("time_create").getValue();
+                                    auto=(String)snap.child("auto").getValue();
                                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
 
                                     time_log=format.format(Calendar.getInstance().getTime());
@@ -101,6 +107,18 @@ public class Login extends AppCompatActivity {
 
                     }
                 });
+//                mAuth.signInWithEmailAndPassword(email1,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        if(task.isSuccessful()){
+//                            Toast.makeText(Login.this, "Login successfully", Toast.LENGTH_SHORT).show();
+//                                    startActivity(new Intent(Login.this, Main.class));
+//                        }else{
+//                            Toast.makeText(Login.this, "Failed to login! Please check your credentials", Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
+//                });
             }
         });
 
