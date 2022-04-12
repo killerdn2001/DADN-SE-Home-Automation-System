@@ -1,10 +1,9 @@
 import serial.tools.list_ports
 import sys
 from Adafruit_IO import MQTTClient
-import time
 
 from datetime import datetime, date
-from data import *
+from data import Database
 import pyrebase
 import time
 import random
@@ -30,13 +29,6 @@ def disconnected(client):
     sys.exit(1)
 
 
-temp = ''
-update_fan = True
-fan_id = ''
-id_rec = ''
-level = ''
-
-
 def message(client, feed_id, payload):
     if isMicrobitConnected:
         if feed_id == "dadn.led1":
@@ -53,8 +45,10 @@ def message(client, feed_id, payload):
                 ser.write(("4#").encode())
             elif payload == "3":
                 ser.write(("5#").encode())
+        global temp, update_fan, fan_id, id_rec, level, id_room
+        id_room = 1
         if feed_id == "dadn.temp1":
-            fan_query = db_fan().order_by_child(
+            fan_query = database.db_fan().order_by_child(
                 'id_location').equal_to(id_room).get()
             for fan in fan_query.each():
                 update_fan = True
@@ -77,19 +71,18 @@ def message(client, feed_id, payload):
                     update_fan = False
                 if update_fan:
                     client.publish("dadn.fan1", level)
-                    db_fan().child(fan.key()).update({'level': level})
+                    database.db_fan().child(fan.key()).update({'level': level})
         if feed_id == "dadn.light1":
 
             # Add record to database
-            global temp, update_fan, fan_id, id_rec, level, auto
-            id_room = 1
+
             today = date.today().strftime("%d/%m/%Y") + " " + \
                 datetime.now().strftime("%H:%M:%S")
             try:
-                id_rec = len(db_rec().get().val())+1
+                id_rec = len(database.db_rec().get().val())+1
             except:
                 id_rec = 1
-            light_query = db_light().order_by_child(
+            light_query = database.db_light().order_by_child(
                 'id_location').equal_to(id_room).get()
             for light in light_query.each():
                 update_light = True
@@ -121,12 +114,13 @@ def message(client, feed_id, payload):
                         'status': '',
                         'level': level}
                     id_rec += 1
-                    db.child("Record").push(data_rec)
+                    database.db_rec().push(data_rec)
 
                 # If update light, add record for light
                 if update_light:
                     client.publish("dadn.led1", 0 if status == 'off' else 1)
-                    db_light().child(light.key()).update({'status': status})
+                    database.db_light().child(
+                        light.key()).update({'status': status})
                     data_rec = {
                         'id': id_rec,
                         'id_sensor': id_room,
@@ -139,7 +133,7 @@ def message(client, feed_id, payload):
                         'auto': True,
                         'status': status,
                         'level': ''}
-                    db.child("Record").push(data_rec)
+                    database.db_rec().push(data_rec)
 
                 # If neither fan nor light update, add default record
                 if not update_fan and not update_light:
@@ -155,13 +149,13 @@ def message(client, feed_id, payload):
                         'auto': True,
                         'status': '',
                         'level': ''}
-                    db.child("Record").push(data_rec)
+                    database.db_rec().push(data_rec)
 
                 # Update room information
-                location_query = db_location().order_by_child(
+                location_query = database.db_location().order_by_child(
                     'id').equal_to(id_room).get()
                 for location in location_query.each():
-                    db_location().child(location.key()).update(
+                    database.db_location().child(location.key()).update(
                         {'temp': temp, 'light': bright})
         print("Nhan du lieu: " + feed_id + " " + payload)
 
@@ -234,7 +228,7 @@ def readSerial():
 
 def record_stream_handler(message):
     try:
-        id_rec = db.child("Record").child(message["path"].split("/")[1]).get()
+        id_rec = database.db_rec().child(message["path"].split("/")[1]).get()
         auto_rec = " automatically" if id_rec.val()['auto'] else " manually"
         if id_rec.val()['type'] == "Fan":
             print("Fan set to "+str(id_rec.val()['level'])+auto_rec)
@@ -247,8 +241,6 @@ def record_stream_handler(message):
         pass
 
 
-auto = ''
-
 # Listen to user database for getting auto mode information
 
 
@@ -259,17 +251,18 @@ def user_stream_handler(message):
         update_attribute = mess_split[2]
         id_user = mess_split[1]
         if update_attribute == 'last_login':
-            auto = db.child("User").child(id_user).get().val()['auto']
+            auto = database.db_user().child(id_user).get().val()['auto']
         elif update_attribute == 'auto':
             auto = message["data"]
         print("Auto mode on" if auto == "true" else "Auto mode off")
 
 
 def listen():
-    rec_stream = db.child("Record").stream(record_stream_handler)
-    auto_stream = db.child("User").stream(user_stream_handler)
+    rec_stream = database.db_rec().stream(record_stream_handler)
+    auto_stream = database.db_user().stream(user_stream_handler)
 
 
+database = Database.getDatabase()
 listen()
 
 
