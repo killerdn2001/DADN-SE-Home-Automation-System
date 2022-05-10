@@ -1,67 +1,3 @@
-//package com.example.btl;
-//
-//import android.os.Bundle;
-//
-//import androidx.fragment.app.Fragment;
-//
-//import android.view.LayoutInflater;
-//import android.view.View;
-//import android.view.ViewGroup;
-//
-///**
-// * A simple {@link Fragment} subclass.
-// * Use the {@link ControlFragment#newInstance} factory method to
-// * create an instance of this fragment.
-// */
-//public class ControlFragment extends Fragment {
-//
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
-//
-//    public ControlFragment() {
-//        // Required empty public constructor
-//    }
-//
-//    /**
-//     * Use this factory method to create a new instance of
-//     * this fragment using the provided parameters.
-//     *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
-//     * @return A new instance of fragment ControlFragment.
-//     */
-//    // TODO: Rename and change types and number of parameters
-//    public static ControlFragment newInstance(String param1, String param2) {
-//        ControlFragment fragment = new ControlFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//    }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_control, container, false);
-//    }
-//}
 package com.example.btl;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -110,12 +46,10 @@ public class ControlFragment extends Fragment implements CompoundButton.OnChecke
     private long id_rec;
     private int cur_temp,cur_sun;
     private FirebaseUser user;
-    private String userID,userEmail;
-    private boolean user_click;
+    public static boolean user_click;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_control,container,false);
     }
 
@@ -134,21 +68,6 @@ public class ControlFragment extends Fragment implements CompoundButton.OnChecke
         high_btn = getView().findViewById(R.id.high);
         switch_auto=getView().findViewById(R.id.auto_button);
 
-        //Get user
-        user= FirebaseAuth.getInstance().getCurrentUser();
-//        userID=user.getUid();
-//        FirebaseDatabase.getInstance().getReference("User").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                userEmail=snapshot.getValue(User.class).getEmail();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-        // Set event for switch buttons
         switch_auto.setOnCheckedChangeListener(this);
         switch_fan.setOnCheckedChangeListener(this);
         switch_light.setOnCheckedChangeListener(this);
@@ -208,7 +127,7 @@ public class ControlFragment extends Fragment implements CompoundButton.OnChecke
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
                     Calendar calendar=Calendar.getInstance();
 //                    format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
-                    if(Login.auto=="false") {
+                    if(Login.auto.equals("false")) {
                         Record rec = new Record(id_rec, id_room, id_room, cur_sun, cur_temp, level, "", format.format(Calendar.getInstance().getTime()), Login.email, "Fan", false);
                         FirebaseDatabase.getInstance().getReference("Record").push().setValue(rec);
                         change_fan = true;
@@ -472,8 +391,8 @@ public class ControlFragment extends Fragment implements CompoundButton.OnChecke
                     });
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
                     Calendar calendar=Calendar.getInstance();
-                    if(Login.auto=="false") {
-                        Record rec = new Record(id_rec, id_room, id_room, cur_sun, cur_temp, -1, light, format.format(Calendar.getInstance().getTime()), userEmail, "Light", false);
+                    if(Login.auto.equals("false")) {
+                        Record rec = new Record(id_rec, id_room, id_room, cur_sun, cur_temp, -1, light, format.format(Calendar.getInstance().getTime()), Login.email, "Light", false);
                         FirebaseDatabase.getInstance().getReference("Record").push().setValue(rec);
                         change_light = true;
                     }

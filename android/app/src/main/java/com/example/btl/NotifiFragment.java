@@ -39,12 +39,12 @@ public class NotifiFragment extends Fragment {
         list=new ArrayList<>();
         mAdapter=new mAdapter(getContext(),list);
         recyclerView.setAdapter(mAdapter);
-        FirebaseDatabase.getInstance().getReference("Record").orderByChild("email").equalTo(Login.email).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("Record").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean i=true;
+                list.clear();
                 for(DataSnapshot snap:snapshot.getChildren()){
-                    if (snap.child("auto").getValue().equals(true)){
+                    if (snap.child("auto").getValue().equals(true)&&(snap.child("type").getValue().equals("Fan")||snap.child("type").getValue().equals("Light"))){
                         Record r=snap.getValue(Record.class);
                         list.add(r);
                     }

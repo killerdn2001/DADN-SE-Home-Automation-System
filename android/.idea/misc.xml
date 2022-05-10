@@ -17,6 +17,7 @@
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_home.xml" value="0.2" />
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_login.xml" value="0.1265625" />
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_notifi.xml" value="0.2" />
+        <entry key="..\:/android/btl/app/src/main/res/layout/fragment_notifi1.xml" value="0.27447916666666666" />
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_second.xml" value="0.27447916666666666" />
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_sign_up.xml" value="0.1265625" />
         <entry key="..\:/android/btl/app/src/main/res/layout/fragment_static.xml" value="0.27447916666666666" />
@@ -25,9 +26,9 @@
         <entry key="..\:/android/btl/app/src/main/res/layout/home.xml" value="0.1" />
         <entry key="..\:/android/btl/app/src/main/res/layout/item.xml" value="0.2" />
         <entry key="..\:/android/btl/app/src/main/res/layout/login.xml" value="0.16944444444444445" />
-        <entry key="..\:/android/btl/app/src/main/res/layout/lol.xml" value="0.16" />
+        <entry key="..\:/android/btl/app/src/main/res/layout/lol.xml" value="0.1" />
         <entry key="..\:/android/btl/app/src/main/res/layout/notifilist.xml" value="0.1671875" />
-        <entry key="..\:/android/btl/app/src/main/res/layout/sign_up.xml" value="0.2" />
+        <entry key="..\:/android/btl/app/src/main/res/layout/sign_up.xml" value="0.1" />
         <entry key="..\:/android/btl/app/src/main/res/layout/test.xml" value="0.1" />
         <entry key="..\:/android/btl/app/src/main/res/menu/bottom_menu.xml" value="0.1" />
         <entry key="..\:/android/btl/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.137" />

@@ -1,48 +1,37 @@
 package com.example.btl;
 
-public class NotifiRec {
-    int id_room,status;
-    String type,time;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
-    public int getId_room() {
-        return id_room;
-    }
+import androidx.appcompat.app.AppCompatActivity;
 
-    public void setId_room(int id_room) {
-        this.id_room = id_room;
-    }
+public class NotifiRec extends AppCompatActivity {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.lol);
+        RadioGroup group=findViewById(R.id.l);
+        RadioButton btn1=findViewById(R.id.radioButton);
+        RadioButton btn2=findViewById(R.id.radioButton2);
+        Button btn=findViewById(R.id.bt);
+        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i==R.id.radioButton)
+                    Toast.makeText(NotifiRec.this,"1",Toast.LENGTH_SHORT).show();
+                else if (i==R.id.radioButton2)
+                    Toast.makeText(NotifiRec.this,"2",Toast.LENGTH_SHORT).show();
+            }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
-    public NotifiRec() {
-    }
-
-    public NotifiRec(int id_room, int status, String type, String time) {
-        this.id_room = id_room;
-        this.status = status;
-        this.type = type;
-        this.time = time;
+        });
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btn1.setChecked(true);
+            }
+        });
     }
 }

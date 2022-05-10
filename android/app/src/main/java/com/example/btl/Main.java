@@ -5,9 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -39,7 +37,7 @@ public class Main extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
     }
 
-    private NavigationBarView.OnItemSelectedListener navListen=new NavigationBarView.OnItemSelectedListener() {
+    private final NavigationBarView.OnItemSelectedListener navListen=new NavigationBarView.OnItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment sel=null;

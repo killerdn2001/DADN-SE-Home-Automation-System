@@ -50,7 +50,7 @@ public class mAdapter extends RecyclerView.Adapter<mAdapter.MyViewHolder> {
             else holder.textView.setText("Fan in "+room+" automatically turn on to level "+notifiRec.getLevel()+"!");
         }
         else if (notifiRec.getType().equals("Light")){
-            if(notifiRec.getStatus()=="on")holder.textView.setText("Light in "+room+" automatically turn on!");
+            if(notifiRec.getStatus().equals("on"))holder.textView.setText("Light in "+room+" automatically turn on!");
             else holder.textView.setText("Light in "+room+" automatically turn off!");
         }
 

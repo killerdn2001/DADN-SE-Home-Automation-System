@@ -70,12 +70,10 @@ def message(client, feed_id, payload):
                 else:
                     update_fan = False
                 if update_fan:
-                    client.publish("dadn.fan1", level)
                     database.db_fan().child(fan.key()).update({'level': level})
         if feed_id == "dadn.light1":
 
             # Add record to database
-
             today = date.today().strftime("%d/%m/%Y") + " " + \
                 datetime.now().strftime("%H:%M:%S")
             try:
@@ -109,7 +107,7 @@ def message(client, feed_id, payload):
                         'light': bright,
                         'temp': temp,
                         'time': today,
-                        'email': '',
+                        'email': email,
                         'auto': True,
                         'status': '',
                         'level': level}
@@ -118,7 +116,6 @@ def message(client, feed_id, payload):
 
                 # If update light, add record for light
                 if update_light:
-                    client.publish("dadn.led1", 0 if status == 'off' else 1)
                     database.db_light().child(
                         light.key()).update({'status': status})
                     data_rec = {
@@ -129,10 +126,10 @@ def message(client, feed_id, payload):
                         'light': bright,
                         'temp': temp,
                         'time': today,
-                        'email': '',
+                        'email': email,
                         'auto': True,
                         'status': status,
-                        'level': ''}
+                        'level': -1}
                     database.db_rec().push(data_rec)
 
                 # If neither fan nor light update, add default record
@@ -140,15 +137,15 @@ def message(client, feed_id, payload):
                     data_rec = {
                         'id': id_rec,
                         'id_sensor': id_room,
-                        'id_device': '',
+                        'id_device': -1,
                         'type': "",
                         'light': bright,
                         'temp': temp,
                         'time': today,
-                        'email': '',
+                        'email': email,
                         'auto': True,
                         'status': '',
-                        'level': ''}
+                        'level': -1}
                     database.db_rec().push(data_rec)
 
                 # Update room information
@@ -241,20 +238,22 @@ def record_stream_handler(message):
         pass
 
 
+auto = ''
+email = ''
 # Listen to user database for getting auto mode information
 
 
 def user_stream_handler(message):
-    global auto
+    global auto, email
     mess_split = message["path"].split("/")
     if len(mess_split) == 3:
         update_attribute = mess_split[2]
         id_user = mess_split[1]
         if update_attribute == 'last_login':
             auto = database.db_user().child(id_user).get().val()['auto']
+            email = database.db_user().child(id_user).get().val()['email']
         elif update_attribute == 'auto':
             auto = message["data"]
-        print("Auto mode on" if auto == "true" else "Auto mode off")
 
 
 def listen():

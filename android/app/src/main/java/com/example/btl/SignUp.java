@@ -84,68 +84,36 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(SignUp.this,"All field is required",Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                    email_edit.setError("Please provide valid email!");
-                    return;
-                }
                 if (!pass1.equals(pass2)){
                     Toast.makeText(SignUp.this,"The confirm password doesn't match",Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                FirebaseDatabase.getInstance().getReference("User").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                        if (snapshot.getChildrenCount()!=0){
-//                            Toast.makeText(SignUp.this,"Account existed. Try another email",Toast.LENGTH_SHORT).show();
-//                        }
-//                        else {
-//                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
-//                            format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
-//                            Login.time_log=format.format(Calendar.getInstance().getTime());
-//                            Login.time_create=Login.time_log;
-//                            Login.email=email;
-//                            Login.name=name;
-//                            Login.phone=phone;
-//                            FirebaseDatabase.getInstance().getReference("User").push().setValue(new User(name,email,phone,pass1,Login.time_log,Login.time_create,"false"));
-//                            Toast.makeText(SignUp.this,"Account created successfully",Toast.LENGTH_SHORT).show();
-//                            startActivity(new Intent(SignUp.this, Main.class));
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//                });
-                System.out.println(email+pass1);
-                mAuth.createUserWithEmailAndPassword(email,pass1).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                FirebaseDatabase.getInstance().getReference("User").orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            System.out.println(5);
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (snapshot.getChildrenCount()!=0){
+                            Toast.makeText(SignUp.this,"Account existed. Try another email",Toast.LENGTH_SHORT).show();
+                        }
+                        else {
                             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy kk:mm:ss");
-//                            format.setTimeZone(TimeZone.getTimeZone("GMT+8:12"));
                             Login.time_log=format.format(Calendar.getInstance().getTime());
                             Login.time_create=Login.time_log;
-                            User user = new User(name, email, phone, pass1, Login.time_log, Login.time_create, "false");
-                            FirebaseDatabase.getInstance().getReference("User").child(mAuth.getCurrentUser().getUid())
-                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(SignUp.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(SignUp.this, Main.class));
-                                    } else {
-                                        Toast.makeText(SignUp.this, "Account created fail! Try again!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        }else{
-                            Toast.makeText(SignUp.this,"Account created failed! Try again!",Toast.LENGTH_SHORT).show();
+                            Login.email=email;
+                            Login.name=name;
+                            Login.phone=phone;
+                            FirebaseDatabase.getInstance().getReference("User").push().setValue(new User(name,email,phone,pass1,Login.time_log,Login.time_create,"false"));
+                            Toast.makeText(SignUp.this,"Account created successfully",Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUp.this, Main.class));
                         }
                     }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
                 });
+
 
 
             }

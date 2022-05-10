@@ -43,7 +43,7 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.441">
+        app:layout_constraintVertical_bias="0.6">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -91,9 +91,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="154dp"
+                android:layout_marginEnd="140dp"
                 android:layout_marginBottom="327dp"
-                android:text="29.5 \u2103 "
+                android:text="33.6 \u2103 "
                 android:textColor="#ff6600"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="115dp"
+                android:layout_marginEnd="100dp"
                 android:layout_marginBottom="232dp"
                 android:text="1 Hour 56 Mins "
                 android:textColor="#3F51B5"
@@ -166,9 +166,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="160dp"
+                android:layout_marginEnd="135dp"
                 android:layout_marginBottom="136dp"
-                android:text="3.9 Cd "
+                android:text="201.3 Cd "
                 android:textColor="#B53F64"
                 android:textSize="20dp"
                 android:textStyle="bold" />
@@ -204,7 +204,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginEnd="147dp"
+                android:layout_marginEnd="137dp"
                 android:layout_marginBottom="40dp"
                 android:text="56 Mins  "
                 android:textColor="#FFC107"
