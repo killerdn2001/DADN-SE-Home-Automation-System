@@ -3,7 +3,8 @@
 #### Below is user interface
 
 - Home page
-  ![This is homepage](/assets/home.png)
+
+![This is homepage](/assets/home.png)
 
 - Home page ![This is homepage](/assets/home.png)
 
